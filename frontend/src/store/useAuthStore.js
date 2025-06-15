@@ -22,6 +22,10 @@ export const useAuthStore= create((set)=>({
             isCheckingAuth: false // Set both at the same time
         })
     }
-    // Remove the finally block completely
-}
-}))
+    
+},
+    signup: async(data)=>{
+        
+    }
+})
+)
