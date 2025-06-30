@@ -17,7 +17,7 @@ app.use(cors({
 }))
 
 app.use("/api/auth",authRoutes)
-app.use("/api/message",messageRoutes)
+app.use("/api/messages",messageRoutes)
 app.listen(5001,()=>{
     console.log('Server is running on port 50001')
     connectDB();
