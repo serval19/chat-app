@@ -2,13 +2,14 @@ import {create} from 'zustand'
 import {axiosInstance} from '../lib/axios.js'
 import {toast} from 'react-hot-toast'
 
-export const useAuthStore= create((set)=>({
+export const useAuthStore= create((set,get)=>({
     authUser: null,
     isCheckingAuth: true,
     isSigningUp: false,
     isLoggingIn: false,
     isUpdatingProfile: false,
     onlineUsers: [],
+    socket: null,
 
     checkAuth: async() => {
     try {
@@ -17,6 +18,7 @@ export const useAuthStore= create((set)=>({
             authUser: res.data,
             isCheckingAuth: false // Set both at the same time
         })
+        get().connectSocket()
     } catch (error) {
         console.log("error in checkauth", error)
         set({
@@ -30,9 +32,11 @@ export const useAuthStore= create((set)=>({
         set({isSigningUp: true})
         try {
             const res=await axiosInstance.post("/auth/signup",data)
-            toast.success("Account created successfully")
+            
             set({authUser: res.data})
             toast.success("Account created successfully")
+            get().connectSocket()
+
             
         } catch (error) {
             toast.error(error.response.data.message)
@@ -47,6 +51,7 @@ export const useAuthStore= create((set)=>({
             await axiosInstance.post("/auth/logout")
             set({authUser: null})
             toast.success("logged out successfully")
+            get().disconnectSocket()
 
         } catch (error) {
             toast.error(error.response.data.message)
@@ -59,6 +64,7 @@ export const useAuthStore= create((set)=>({
             const res=await axiosInstance.post("/auth/login",data)
             set({authUser: res.data})
             toast.success("login successful")
+            get().connectSocket()
         } catch (error) {
             toast.error(error.response.data.message)
 
@@ -83,5 +89,8 @@ export const useAuthStore= create((set)=>({
             set({isUpdatingProfile: false})
         }
     },
+    connectSocket: ()=>{},
+    disconnectSocket: ()=>{}
+
 })
 )
