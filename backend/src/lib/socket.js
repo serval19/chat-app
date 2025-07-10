@@ -9,10 +9,18 @@ const io= new Server(server,{
         origin: ['http://localhost:5173']
     }
 })
+// used to store online users
+const userSocketMap={} // {userId: socketId}
 io.on('connection',(socket)=>{
     console.log('a user has connected',socket.id)
+    const userId=socket.handshake.query.userId
+    if(userId) userSocketMap[userId]=socket.id
+    // io.emit is used to broadcast to all connected clients
+    io.emit('getOnlineUsers',Object.keys(userSocketMap))
     socket.on('disconnect',()=>{
         console.log('a user has disconnected',socket.id)
+        delete userSocketMap[userId]
+        io.emit('getOnlineUsers',Object.keys(userSocketMap))
     })
 })
 export {io,app,server}
